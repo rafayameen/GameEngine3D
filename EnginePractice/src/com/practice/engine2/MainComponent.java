@@ -1,5 +1,6 @@
 package com.practice.engine2;
 
+
 public class MainComponent {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
@@ -10,10 +11,11 @@ public class MainComponent {
 	private Game game;
 
 	public MainComponent() {
-		
+		System.out.println(RenderUtils.getOpenGLVersion());
 		RenderUtils.initGraphics();
 		isRunning = false;
 		game = new Game();
+		
 	}
 
 	public void start() {
@@ -27,68 +29,73 @@ public class MainComponent {
 		isRunning = false;
 	}
 
+
 	private void run() {
 		isRunning = true;
 		
 		int frames = 0;
 		long frameCounter = 0;
 
+		final double frameTime = 1.0 / FRAME_CAP;
+		// Time that previous frame start drawing
 		long lastTime = Time.getTime();
 		double unprocessedTime = 0;
 
 		while (isRunning) {
 			boolean render = false;
-			final double frameTime = 1.0 / FRAME_CAP;
 
 			long startTime = Time.getTime();
 			long passedTime = startTime - lastTime;
-
-			unprocessedTime += passedTime / (double) Time.SECOND;
 			lastTime = startTime;
+			unprocessedTime += passedTime / (double) Time.SECOND;
 			
 			frameCounter += passedTime;
-
+			
 			while (unprocessedTime > frameTime) {
 				render = true;
+
 				unprocessedTime -= frameTime;
 
 				if (Window.isCloseRequested())
 					stop();
-				//Update INput and game
 				
-				
+				Time.setDelta(frameTime);
 				game.input();
-				
+				//Update the game
 				Input.update();
 				game.update();
-				
-				while(frameCounter >= Time.SECOND)
+
+				if(frameCounter >= Time.SECOND)
 				{
 					System.out.println(frames);
 					
 					frames = 0;
 					frameCounter = 0;
 				}
-			}
 
-			if (render) {
+			}
+			if (render)
+			{
 				render();
 				frames ++;
-			} else {
+			}
+			else {
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
-
+					e.printStackTrace();
 				}
 			}
 		}
+
 		cleanUp();
 	}
 
 	private void render() {
 		RenderUtils.clearScreen();
-		Window.render();
 		game.render();
+		Window.render();
+		
 
 	}
 

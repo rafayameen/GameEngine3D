@@ -1,30 +1,34 @@
 package com.practice.engine2;
 
-
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 
 public class RenderUtils 
-{	
-	public static void clearScreen() 
+{
+	public static void clearScreen()
 	{
-		//TODO: Stencil buffer
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		//TODO: stencil buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	
 	public static void initGraphics()
 	{
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.0f, 0.0f, 0.0f,0.0f);
 		
-		GL11.glFrontFace(GL11.GL_CW);
-		GL11.glCullFace(GL11.GL_BACK);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		glFrontFace(GL_CW);	
+		glCullFace(GL_BACK);
+		GL11.glEnable(0);
+		glEnable(GL_DEPTH_TEST);
 		
 		//TODO: depth clamp
-		
-		GL11.glEnable(GL30.GL_FRAMEBUFFER_SRGB);
-		
+		glEnable(GL_FRAMEBUFFER_SRGB);
 	}
+	
+	public static String getOpenGLVersion()
+	{
+		return glGetString(GL_VERSION);
+	}
+
 }
