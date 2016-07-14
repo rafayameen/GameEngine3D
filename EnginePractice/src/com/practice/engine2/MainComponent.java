@@ -1,6 +1,5 @@
 package com.practice.engine2;
 
-
 public class MainComponent {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
@@ -11,7 +10,6 @@ public class MainComponent {
 	private Game game;
 
 	public MainComponent() {
-		System.out.println(RenderUtils.getOpenGLVersion());
 		RenderUtils.initGraphics();
 		isRunning = false;
 		game = new Game();
@@ -28,7 +26,6 @@ public class MainComponent {
 	public void stop() {
 		isRunning = false;
 	}
-
 
 	private void run() {
 		isRunning = true;
@@ -60,8 +57,9 @@ public class MainComponent {
 					stop();
 				
 				Time.setDelta(frameTime);
+				
 				game.input();
-				//Update the game
+				//Update Input and the game
 				Input.update();
 				game.update();
 

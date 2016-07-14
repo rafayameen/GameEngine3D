@@ -28,6 +28,90 @@ public class Matrix4f
 		
 	}
 	
+	public Matrix4f initTranslation(float x, float y, float z)
+	{
+		//Set to identity
+		for(int i = 0; i < 4; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				m[i][j] = 0;
+			}
+		}
+		
+		m[0][0] = 1;
+		m[1][1] = 1;
+		m[2][2] = 1;
+		m[3][3] = 1;
+		
+		//For Translation
+		m[0][3] = x;
+		m[1][3] = y;
+		m[2][3] = z;
+	
+		return this;
+	}
+	
+	public Matrix4f initRotation(float x, float y, float z)
+	{
+		x = (float)Math.toRadians(x);
+		y = (float)Math.toRadians(y);
+		z = (float)Math.toRadians(z);
+		
+		Matrix4f rx = new Matrix4f();
+		Matrix4f ry = new Matrix4f();
+		Matrix4f rz = new Matrix4f();
+		
+		for(int i = 0; i < 4; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				rx.m[i][j] = 0;
+				ry.m[i][j] = 0;
+				rz.m[i][j] = 0;
+			}
+		}
+		//Rotation around X-axis
+		rx.m[0][0] = 1;
+		rx.m[3][3] = 1;
+		rx.m[1][1] = (float)Math.cos(x);	rx.m[1][2] = -(float)Math.sin(x);
+		rx.m[2][1] = (float)Math.sin(x);	rx.m[2][2] =  (float)Math.cos(x);
+		
+		//Rotation around Y-axis
+		ry.m[0][0] = (float)Math.cos(y);	ry.m[0][2] = -(float)Math.sin(y);
+		ry.m[1][1] = 1;
+		ry.m[3][3] = 1;
+		ry.m[2][0] = (float)Math.sin(y);	ry.m[2][2] =  (float)Math.cos(y);
+		
+		//Rotation around Z-axis
+		rz.m[0][0] = (float)Math.cos(z);	rz.m[0][1] = -(float)Math.sin(z);
+		rz.m[1][0] = (float)Math.sin(z);	rz.m[1][1] =  (float)Math.cos(z);
+		rz.m[2][2] = 1;
+		rz.m[3][3] = 1;
+		
+		
+		
+		m = rx.mul(ry.mul(rz)).getM();
+		
+		return this;
+	}
+	
+	public Matrix4f initScale(float x, float y, float z)
+	{
+		for(int i = 0; i < 4; i++)
+			for(int j = 0; j < 4; j++)
+			{
+				m[i][j] = 0;
+			}
+		
+		m[0][0] = x;
+		m[1][1] = y;
+		m[2][2] = z;
+		m[3][3] = 1;
+		
+		return this;
+	}
+	
 	public Matrix4f mul(Matrix4f r)
 	{
 		Matrix4f res = new Matrix4f();
@@ -36,7 +120,7 @@ public class Matrix4f
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				res.set(i, j, m[i][0] * r.get(0, j)+
+				res.set(i, j,  m[i][0] * r.get(0, j)+
 							   m[i][1] * r.get(1, j)+
 							   m[i][2] * r.get(2, j)+
 							   m[i][3] * r.get(3, j));

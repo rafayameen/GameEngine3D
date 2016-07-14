@@ -3,21 +3,40 @@ package com.practice.engine2;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.*;
 
+import java.util.HashMap;
+
 
 
 public class Shader 
 {
 	private int program;
+	private HashMap<String, Integer> uniforms;
 	
 	public Shader()
 	{
 		program = glCreateProgram();
+		uniforms = new HashMap<String, Integer>();
 		
 		if(program == 0)
 		{
 			System.err.println("Failed to create Shader: Could not find valid memory location");
 			System.exit(1);
 		}
+	}
+	
+	public void addUniform(String uniform)
+	{
+		int uniformLocation = glGetUniformLocation(program, uniform);
+		
+		if(uniformLocation == 0xFFFFFFFF)
+		{
+			System.err.println("Error: Could not find unifrom: " + uniform);
+			new Exception().printStackTrace();
+			System.exit(1);
+			
+		}
+		
+		uniforms.put(uniform, uniformLocation);
 	}
 	
 	public void addVertexShader(String text)
@@ -35,11 +54,12 @@ public class Shader
 		addProgram(text, GL_FRAGMENT_SHADER);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void compileShader()
 	{
 		glLinkProgram(program);
 		
-		if(glGetShader(program, GL_LINK_STATUS) == 0)
+		if(glGetProgram(program, GL_LINK_STATUS) == 0)
 		{
 			System.err.print(glGetShaderInfoLog(program, 1024));
 			System.exit(1);
@@ -47,7 +67,7 @@ public class Shader
 		
 		glValidateProgram(program);
 		
-		if(glGetShader(program, GL_VALIDATE_STATUS) == 0)
+		if(glGetProgram(program, GL_VALIDATE_STATUS) == 0)
 		{
 			System.err.print(glGetShaderInfoLog(program, 1024));
 			System.exit(1);
@@ -59,6 +79,7 @@ public class Shader
 		glUseProgram(program);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void addProgram(String text, int type)
 	{
 		int shader = glCreateShader(type);
@@ -78,7 +99,29 @@ public class Shader
 			System.exit(1);
 		}
 		
-		glAttachShader(shader, program);
+		glAttachShader(program, shader);
 	}
+	
+	public void setUniformi(String uniform, int value)
+	{
+		glUniform1i(uniforms.get(uniform), value);
+	}
+	
+	public void setUniformf(String uniform, float f)
+	{
+		glUniform1f(uniforms.get(uniform), f);
+	}
+	
+	public void setUniform(String uniform, Vector3f value)
+	{
+		glUniform3f(uniforms.get(uniform), value.getX(), value.getY(), value.getZ());
+	}
+	
+	public void setUniform(String uniform, Matrix4f value)
+	{
+		glUniformMatrix4(uniforms.get(uniform), true, Util.createFlippedBuffer(value));
+	}
+	
+	
 
 }
